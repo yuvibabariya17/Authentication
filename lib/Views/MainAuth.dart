@@ -244,7 +244,7 @@ class _MainAuthState extends State<MainAuth> {
           }
         } else {
           setState(() {
-            isAuthenticate = false;
+            isAuthenticate = false; 
           });
         }
       },
