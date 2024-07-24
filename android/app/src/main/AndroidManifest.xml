@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="demo"
+        android:label="Authentication"
         android:name="${applicationName}"
         android:hardwareAccelerated="true"
         android:requestLegacyExternalStorage="true"

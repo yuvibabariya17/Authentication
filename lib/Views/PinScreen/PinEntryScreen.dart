@@ -1,68 +1,51 @@
 import 'package:demo/Constant/color_const.dart';
-import 'package:demo/Views/PinEntryScreen.dart';
+import 'package:demo/Views/Home/HomeScreen.dart';
+import 'package:demo/Views/MainAuth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
-class PinSetupScreen extends StatefulWidget {
-  const PinSetupScreen({super.key});
+class PinEntryScreen extends StatefulWidget {
+  const PinEntryScreen({super.key});
 
   @override
-  _PinSetupScreenState createState() => _PinSetupScreenState();
+  _PinEntryScreenState createState() => _PinEntryScreenState();
 }
 
-class _PinSetupScreenState extends State<PinSetupScreen> {
-  String _pin = '';
-  String _confirmPin = '';
-  bool _isConfirming = false;
+class _PinEntryScreenState extends State<PinEntryScreen> {
+  String _enteredPin = '';
 
-  Future<void> _savePin(String pin) async {
+  Future<String?> _getSavedPin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('pin', pin);
+    return prefs.getString('pin');
   }
 
   void _onKeyPress(String value) {
     setState(() {
-      if (_isConfirming) {
-        if (value == 'DEL') {
-          if (_confirmPin.isNotEmpty) {
-            _confirmPin = _confirmPin.substring(0, _confirmPin.length - 1);
-          }
-        } else {
-          if (_confirmPin.length < 4) {
-            _confirmPin += value;
-          }
+      if (value == 'DEL') {
+        if (_enteredPin.isNotEmpty) {
+          _enteredPin = _enteredPin.substring(0, _enteredPin.length - 1);
         }
       } else {
-        if (value == 'DEL') {
-          if (_pin.isNotEmpty) {
-            _pin = _pin.substring(0, _pin.length - 1);
-          }
-        } else {
-          if (_pin.length < 4) {
-            _pin += value;
-          }
+        if (_enteredPin.length < 4) {
+          _enteredPin += value;
         }
       }
     });
   }
 
-  void _onSubmit() {
-    if (_pin.length == 4 && _confirmPin.length == 4) {
-      if (_pin == _confirmPin) {
-        _savePin(_pin).then((_) {
-          Get.off(const PinEntryScreen());
-
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => const PinEntryScreen()),
-          // );
-        });
-      } else {
-        _showErrorDialog('PINs do not match. Please try again.');
-      }
+  void _onSubmit() async {
+    String? savedPin = await _getSavedPin();
+    if (_enteredPin == savedPin && _enteredPin.isNotEmpty) {
+      Get.offAll(const Homescreen());
+      // Get.offAll(const MainAuth());  FOR AUTHENTICATION TO CHECK BANK BALANCE
+    } else {
+      _showErrorDialog('Incorrect PIN. Please enter Correct PIN.');
+      setState(() {
+        _enteredPin = '';
+      });
     }
   }
 
@@ -86,7 +69,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     );
   }
 
-  Widget _buildPinDots(String pin) {
+  Widget _buildPinDots() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List<Widget>.generate(4, (index) {
@@ -96,7 +79,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           height: 3.5.h,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: index < pin.length ? Colors.black : Colors.grey,
+            color: index < _enteredPin.length ? Colors.black : Colors.grey,
           ),
         );
       }),
@@ -151,34 +134,25 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isConfirming
-            ? 'Authentication Confirm PIN'
-            : 'Authentication Set PIN'),
+        title: const Text('Authentication App'),
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              _isConfirming ? 'Confirm your PIN' : 'Enter a 4-digit PIN',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            const Text(
+              'Enter your PIN',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 20.0),
-            _buildPinDots(_isConfirming ? _confirmPin : _pin),
+            _buildPinDots(),
             const SizedBox(height: 20.0),
             _buildKeypad(),
             const SizedBox(height: 20.0),
             GestureDetector(
-              onTap: () {
-                if (_isConfirming) {
-                  _onSubmit();
-                } else if (_pin.length == 4) {
-                  setState(() {
-                    _isConfirming = true;
-                  });
-                }
-              },
+              onTap: _onSubmit,
               child: Container(
                 height: 5.7.h,
                 width: 40.w,
@@ -190,19 +164,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                   style: TextStyle(color: white, fontSize: 12.sp),
                 )),
               ),
-            ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     if (_isConfirming) {
-            //       _onSubmit();
-            //     } else if (_pin.length == 4) {
-            //       setState(() {
-            //         _isConfirming = true;
-            //       });
-            //     }
-            //   },
-            //   child: Text(_isConfirming ? 'Submit' : 'Next'),
-            // ),
+            )
           ],
         ),
       ),

@@ -8,3 +8,4 @@ class Strings {
   static const String name = "Enter Name";
   static const String contact = "Enter Contact";
 }
+   

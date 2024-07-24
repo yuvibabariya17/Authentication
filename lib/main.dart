@@ -1,5 +1,5 @@
 import 'package:demo/Constant/color_const.dart';
-import 'package:demo/Views/SplashScreen.dart';
+import 'package:demo/Views/SplashScreen/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';

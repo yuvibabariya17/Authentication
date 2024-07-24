@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:demo/Constant/color_const.dart';
-import 'package:demo/Views/MainAuth.dart';
-import 'package:demo/Views/PinEntryScreen.dart';
-import 'package:demo/Views/PinSetupScreen.dart';
+import 'package:demo/Views/PinScreen/PinEntryScreen.dart';
+import 'package:demo/Views/PinScreen/PinSetupScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
@@ -20,6 +19,12 @@ class Splashscreen extends StatefulWidget {
 class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
+    // Timer(
+    //   const Duration(seconds: 3),
+    //   () {
+    //     Get.to(const Homescreen());
+    //   },
+    // );
     super.initState();
     _checkPinSet();
   }
